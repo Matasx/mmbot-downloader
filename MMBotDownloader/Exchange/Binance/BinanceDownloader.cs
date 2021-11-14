@@ -5,22 +5,25 @@ using System.Linq;
 using System.Net.Http;
 using MMBotDownloader.Core;
 using MMBotDownloader.Utils;
+using MMBotDownloader.Exchange.Common;
 
 namespace MMBotDownloader.Exchange.Binance
 {
-    internal class BinanceDownloader : IDownloader<BinanceChunk>
+    internal class BinanceDownloader : IDownloader<MsChunk>
     {
         private readonly HttpClient _client;
 
         public string Name => "BINANCE";
         public string SymbolExample => "ADAUSDT";
 
+        public int DegreeOfParallelism => 10;
+
         public BinanceDownloader(HttpClient client)
         {
             _client = client;
         }
 
-        public IEnumerable<BinanceChunk> PrepareChunks(DownloadTask downloadTask)
+        public IEnumerable<MsChunk> PrepareChunks(DownloadTask downloadTask)
         {
             var startMs = UnixEpoch.GetEpochMs(downloadTask.Start);
             var endMs = UnixEpoch.GetEpochMs(downloadTask.End);
@@ -29,10 +32,10 @@ namespace MMBotDownloader.Exchange.Binance
 
             return Enumerable
                 .Range(0, count)
-                .Select(i => new BinanceChunk(downloadTask.Symbol, startMs + i * increment));
+                .Select(i => new MsChunk(downloadTask.Symbol, startMs + i * increment, 0));
         }
 
-        public async Task<IEnumerable<string>> DownloadLinesAsync(BinanceChunk chunk)
+        public async Task<IEnumerable<string>> DownloadLinesAsync(MsChunk chunk)
         {
             var url = $"https://api.binance.com/api/v3/klines?symbol={chunk.Symbol}&interval=1m&startTime={chunk.StartTimeMs}&limit=1000";
             var dataString = await _client.GetStringAsync(url);

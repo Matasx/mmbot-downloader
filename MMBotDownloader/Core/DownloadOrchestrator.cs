@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.IO;
 using System.Diagnostics;
-using System.Net;
 using MMBotDownloader.Utils;
 
 namespace MMBotDownloader.Core
@@ -13,15 +12,12 @@ namespace MMBotDownloader.Core
     internal class DownloadOrchestrator
     {
         private readonly UserInterface _ui;
-        private readonly int _degreeOfParallelism;
         private readonly IGenericDownloader[] _downloaders;
 
-        public DownloadOrchestrator(UserInterface ui, IGenericDownloader[] downloaders, int degreeOfParallelism = 10)
+        public DownloadOrchestrator(UserInterface ui, IGenericDownloader[] downloaders)
         {
             _ui = ui;
-            _degreeOfParallelism = degreeOfParallelism;
             _downloaders = downloaders;
-            ServicePointManager.DefaultConnectionLimit = degreeOfParallelism;
         }
 
         public void PrintExchanges()
@@ -70,7 +66,7 @@ namespace MMBotDownloader.Core
             });
             var queue = new Queue<Action>(tasks);
             var awaits = new List<Task>();
-            using var semaphore = new SemaphoreSlim(_degreeOfParallelism);
+            using var semaphore = new SemaphoreSlim(downloader.DegreeOfParallelism);
 
             _ui.WriteSelection("Number of chunks to download:", queue.Count.ToString());
             while (queue.Any())
@@ -79,8 +75,27 @@ namespace MMBotDownloader.Core
                 var action = queue.Dequeue();
                 awaits.Add(Task.Run(() =>
                 {
-                    action();
-                    semaphore.Release();
+                    try
+                    {
+                        Exception lastException = null;
+                        for (var i = 0; i < 3; i++)
+                        {
+                            try
+                            {
+                                action();
+                                return;
+                            }
+                            catch (Exception e)
+                            {
+                                lastException = e;
+                            }
+                        }
+                        _ui.WriteLine($"Exception during download - data will be incomplete:{Environment.NewLine}{lastException}", ConsoleColor.Red);
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
                 }));
             }
             Task.WaitAll(awaits.ToArray());

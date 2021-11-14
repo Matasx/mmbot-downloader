@@ -5,6 +5,8 @@ using MMBotDownloader.Core;
 using MMBotDownloader.Exchange.FTX;
 using MMBotDownloader.Utils;
 using MMBotDownloader.Exchange.Binance;
+using MMBotDownloader.Exchange.Kucoin;
+using System.Net;
 
 namespace MMBotDownloader
 {
@@ -12,11 +14,14 @@ namespace MMBotDownloader
     {
         private static void Main()
         {
+            ServicePointManager.DefaultConnectionLimit = 10;
+
             var ui = new UserInterface();
-            var client = new HttpClient();
+            var client = new HttpClient(new TransientErrorRetryHttpClientHandler());
             var orchestrator = new DownloadOrchestrator(ui, new IGenericDownloader[] {
                 new BinanceDownloader(client),
-                new FTXDownloader(client)
+                new FTXDownloader(client),
+                new KucoinDownloader(client)
             });
             orchestrator.PrintExchanges();
 

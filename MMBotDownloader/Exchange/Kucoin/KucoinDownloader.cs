@@ -4,21 +4,20 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Net.Http;
 using MMBotDownloader.Core;
-using MMBotDownloader.Utils;
 using MMBotDownloader.Exchange.Common;
 
-namespace MMBotDownloader.Exchange.FTX
+namespace MMBotDownloader.Exchange.Kucoin
 {
-    internal class FTXDownloader : IDownloader<SecChunk>
+    internal class KucoinDownloader : IDownloader<SecChunk>
     {
         private readonly HttpClient _client;
 
-        public string Name => "FTX";
-        public string SymbolExample => "ADA-PERP";
+        public string Name => "KUCOIN";
+        public string SymbolExample => "BTC-USDT";
 
-        public int DegreeOfParallelism => 10;
+        public int DegreeOfParallelism => 3;
 
-        public FTXDownloader(HttpClient client)
+        public KucoinDownloader(HttpClient client)
         {
             _client = client;
         }
@@ -27,10 +26,10 @@ namespace MMBotDownloader.Exchange.FTX
 
         public async Task<IEnumerable<string>> DownloadLinesAsync(SecChunk chunk)
         {
-            var url = $"https://ftx.com/api/markets/{chunk.Symbol}/candles?resolution=60&start_time={chunk.StartTimeSec}&end_time={chunk.EndTimeSec}";
+            var url = $"https://api.kucoin.com/api/v1/market/candles?type=1min&symbol={chunk.Symbol}&startAt={chunk.StartTimeSec}&endAt={chunk.EndTimeSec}";
             var dataString = await _client.GetStringAsync(url);
-            var data = JsonConvert.DeserializeObject<FTXResponse>(dataString);
-            return data.result.Select(x => x.close.ToString("G").Replace(',', '.'));
+            var data = JsonConvert.DeserializeObject<KucoinResponse>(dataString);
+            return data.Data.Select(x => x[2].ToString());
         }
 
         public void DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
