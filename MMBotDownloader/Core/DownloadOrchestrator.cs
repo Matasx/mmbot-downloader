@@ -40,7 +40,7 @@ namespace MMBotDownloader.Core
 
         public void Download<T>(IDownloader<T> downloader, DownloadTask downloadTask) where T : struct
         {
-            var fileName = $"{downloadTask.Symbol}_{downloadTask.Start.ToShortDateString()}_{downloadTask.End.ToShortDateString()}.csv";
+            var fileName = $"{downloadTask.Exchange}_{downloadTask.Symbol}_{downloadTask.Start.ToShortDateString()}_{downloadTask.End.ToShortDateString()}.csv";
             foreach (var ch in Path.GetInvalidFileNameChars())
             {
                 fileName = fileName.Replace(ch.ToString(), string.Empty);
