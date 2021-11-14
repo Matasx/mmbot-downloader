@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Http;
 using MMBotDownloader.Core;
 using MMBotDownloader.Exchange.Common;
-using System;
 
 namespace MMBotDownloader.Exchange.Kucoin
 {
