@@ -4,33 +4,34 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Net.Http;
 using MMBotDownloader.Core;
-using MMBotDownloader.Utils;
 using MMBotDownloader.Exchange.Common;
+using System;
 
-namespace MMBotDownloader.Exchange.Binance
+namespace MMBotDownloader.Exchange.Kucoin
 {
-    internal class BinanceDownloader : IDownloader<MsChunk>
+    internal class BitfinexDownloader : IDownloader<MsChunk>
     {
         private readonly HttpClient _client;
 
-        public string Name => "BINANCE";
-        public string SymbolExample => "ADAUSDT";
+        public string Name => "BITFINEX";
+        public string SymbolExample => "tBTCUSD";
 
-        public int DegreeOfParallelism => 10;
+        // Bitfinex API is heavily speed-limited
+        public int DegreeOfParallelism => 1;
 
-        public BinanceDownloader(HttpClient client)
+        public BitfinexDownloader(HttpClient client)
         {
             _client = client;
         }
 
-        public IEnumerable<MsChunk> PrepareChunks(DownloadTask downloadTask) => downloadTask.ToMsChunks(1000);
+        public IEnumerable<MsChunk> PrepareChunks(DownloadTask downloadTask) => downloadTask.ToMsChunks(10000);
 
         public async Task<IEnumerable<string>> DownloadLinesAsync(MsChunk chunk)
         {
-            var url = $"https://api.binance.com/api/v3/klines?symbol={chunk.Symbol}&interval=1m&startTime={chunk.StartTimeMs}&limit=1000";
+            var url = $"https://api-pub.bitfinex.com/v2/candles/trade:1m:{chunk.Symbol}/hist?limit=10000&start={chunk.StartTimeMs}&end={chunk.EndTimeMs}&sort=1";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonConvert.DeserializeObject<IList<IList<object>>>(dataString);
-            return data.Select(x => x[4].ToString());
+            return data.Select(x => x[2].ToString().Replace(',', '.'));
         }
 
         public void DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)

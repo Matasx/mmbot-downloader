@@ -20,6 +20,7 @@ namespace MMBotDownloader
             var client = new HttpClient(new TransientErrorRetryHttpClientHandler());
             var orchestrator = new DownloadOrchestrator(ui, new IGenericDownloader[] {
                 new BinanceDownloader(client),
+                new BitfinexDownloader(client),
                 new FTXDownloader(client),
                 new KucoinDownloader(client)
             });
