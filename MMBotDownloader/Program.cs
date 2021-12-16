@@ -1,12 +1,13 @@
-﻿using System.Linq;
-using System.Net.Http;
-using MMBotDownloader.Configuration;
-using MMBotDownloader.Core;
-using MMBotDownloader.Exchange.FTX;
-using MMBotDownloader.Utils;
-using MMBotDownloader.Exchange.Binance;
-using MMBotDownloader.Exchange.Kucoin;
+﻿using System.Net.Http;
 using System.Net;
+using Downloader.Core.Configuration;
+using Downloader.Core.Core;
+using Downloader.Core.Exchange.Binance;
+using Downloader.Core.Exchange.Bitfinex;
+using Downloader.Core.Exchange.FTX;
+using Downloader.Core.Exchange.Kucoin;
+using Downloader.Core.Utils;
+using System.Linq;
 
 namespace MMBotDownloader
 {

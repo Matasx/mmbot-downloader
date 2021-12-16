@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32002.185
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMBotDownloader", "MMBotDownloader\MMBotDownloader.csproj", "{02B7C7A2-64A8-4201-AB9F-EC99B0EBAF91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MMBotDownloader", "MMBotDownloader\MMBotDownloader.csproj", "{02B7C7A2-64A8-4201-AB9F-EC99B0EBAF91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Downloader.Core", "Downloader.Core\Downloader.Core.csproj", "{7BB16AA8-4338-449C-A21A-8CB94A006711}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{02B7C7A2-64A8-4201-AB9F-EC99B0EBAF91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02B7C7A2-64A8-4201-AB9F-EC99B0EBAF91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02B7C7A2-64A8-4201-AB9F-EC99B0EBAF91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BB16AA8-4338-449C-A21A-8CB94A006711}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BB16AA8-4338-449C-A21A-8CB94A006711}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BB16AA8-4338-449C-A21A-8CB94A006711}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BB16AA8-4338-449C-A21A-8CB94A006711}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
