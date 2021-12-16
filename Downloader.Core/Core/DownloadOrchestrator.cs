@@ -26,7 +26,7 @@ namespace Downloader.Core.Core
 
         public void Download(DownloadTask downloadTask)
         {
-            foreach (var downloader in _downloaders.Where(x => x.Name == downloadTask.Exchange))
+            foreach (var downloader in _downloaders.Where(x => string.Compare(x.Name, downloadTask.Exchange, StringComparison.InvariantCultureIgnoreCase) == 0))
             {
                 downloader.DownloadWith(this, downloadTask);
             }
