@@ -18,7 +18,7 @@ public struct DateTimeRange
 
     public static DateTimeRange FromDiff(DateTime start, TimeSpan diff)
     {
-        var end = start - diff;
+        var end = start + diff;
         return new DateTimeRange(start <= end ? start : end, start <= end ? end : start);
     }
 }
