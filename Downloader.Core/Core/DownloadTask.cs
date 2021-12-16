@@ -2,10 +2,13 @@
 {
     public struct DownloadTask
     {
-        public string Exchange { get; private set; }
-        public string Symbol { get; private set; }
-        public DateTime Start { get; private set; }
-        public DateTime End { get; private set; }        
+        public string Exchange { get; }
+        public string Symbol { get; }
+        public DateTime Start { get; }
+        public DateTime End { get; }
+
+        public DownloadTask(string exchange, string symbol, DateTimeRange range) : this (exchange, symbol, range.Start, range.End)
+        { }
 
         public DownloadTask(string exchange, string symbol, DateTime start, DateTime end)
         {
