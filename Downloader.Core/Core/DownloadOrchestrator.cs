@@ -6,11 +6,14 @@ namespace Downloader.Core.Core
     public class DownloadOrchestrator
     {
         private readonly UserInterface _ui;
+        private readonly IProgress _progress;
         private readonly IGenericDownloader[] _downloaders;
+        private readonly object _lock = new();
 
-        public DownloadOrchestrator(UserInterface ui, IGenericDownloader[] downloaders)
+        public DownloadOrchestrator(UserInterface ui, IProgress progress, IGenericDownloader[] downloaders)
         {
             _ui = ui;
+            _progress = progress;
             _downloaders = downloaders;
         }
 
@@ -34,7 +37,8 @@ namespace Downloader.Core.Core
 
         public void Download<T>(IDownloader<T> downloader, DownloadTask downloadTask) where T : struct
         {
-            _ui.WriteSelection("Downloading:", downloadTask.ToString());
+            var name = downloadTask.ToString();
+            _ui.WriteSelection("Downloading:", name);
 
             var fileName = downloadTask.ToFileName();
             if (File.Exists(fileName))
@@ -42,9 +46,11 @@ namespace Downloader.Core.Core
                 _ui.WriteLine($"{fileName} already exists, skipping.");
                 return;
             }
+            _progress.Report(name, 0, 1);
 
             var chunks = downloader.PrepareChunks(downloadTask).ToList();
             var results = new IList<string>[chunks.Count];
+            var currentChunk = 0;
             var tasks = chunks.Select<T, Action>((x, i) => () =>
             {
                 var stopwatch = new Stopwatch();
@@ -52,6 +58,11 @@ namespace Downloader.Core.Core
                 results[i] = downloader.DownloadLinesAsync(x).GetAwaiter().GetResult().ToList();
                 stopwatch.Stop();
                 _ui.WriteSelection($"Downloaded in {stopwatch.ElapsedMilliseconds} ms:", x.ToString());
+                lock (_lock)
+                {
+                    currentChunk++;
+                    _progress.Report(name, currentChunk, chunks.Count);
+                }
             });
             var queue = new Queue<Action>(tasks);
             var awaits = new List<Task>();
