@@ -10,8 +10,8 @@ namespace Downloader.Core.Configuration
             return new DownloadTask(
                 configuration.Exchange,
                 configuration.TradingPair,
-                DateTime.Parse(configuration.StartDate, null, DateTimeStyles.AssumeUniversal),
-                DateTime.Parse(configuration.StopDate, null, DateTimeStyles.AssumeUniversal));
+                DateTime.Parse(configuration.StartDate, null, DateTimeStyles.AssumeUniversal).ToUniversalTime(),
+                DateTime.Parse(configuration.StopDate, null, DateTimeStyles.AssumeUniversal).ToUniversalTime());
         }
     }
 }

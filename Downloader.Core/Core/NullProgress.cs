@@ -1,9 +1,10 @@
-﻿namespace Downloader.Core.Core;
-
-public class NullProgress : IProgress
+﻿namespace Downloader.Core.Core
 {
-    public void Report(string name, int current, int total)
+    public class NullProgress : IProgress
     {
+        public void Report(string name, int current, int total)
+        {
         
+        }
     }
 }

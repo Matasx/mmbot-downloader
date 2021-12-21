@@ -1,6 +1,7 @@
-﻿namespace Downloader.Core.Core;
-
-public interface IProgress
+﻿namespace Downloader.Core.Core
 {
-    public void Report(string name, int current, int total);
+    public interface IProgress
+    {
+        public void Report(string name, int current, int total);
+    }
 }

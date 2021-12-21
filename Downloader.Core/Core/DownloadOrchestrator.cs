@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Downloader.Core.Exchange.Common;
 using Downloader.Core.Utils;
 
 namespace Downloader.Core.Core
@@ -49,7 +50,7 @@ namespace Downloader.Core.Core
             _progress.Report(name, 0, 1);
 
             var chunks = downloader.PrepareChunks(downloadTask).ToList();
-            var results = new IList<string>[chunks.Count];
+            var results = new IList<Kline>[chunks.Count];
             var currentChunk = 0;
             var tasks = chunks.Select<T, Action>((x, i) => () =>
             {
@@ -103,9 +104,19 @@ namespace Downloader.Core.Core
             _ui.WriteSelection("Writing:", fileName);
 
             using var writer = new StreamWriter(fileName, true);
-            foreach (var line in results.Where(x => x != null).SelectMany(x => x))
+            Kline previous = null;
+            foreach (var kline in results.SelectMany(x => x).OrderBy(x => x.Time))
             {
-                writer.WriteLine(line);
+                if (previous != null)
+                {
+                    var gap = (int)(kline.Time - previous.Time).TotalMinutes - 1;
+                    for (var i = 0; i < gap; i++)
+                    {
+                        writer.WriteLine(previous.Value);
+                    }
+                }
+                writer.WriteLine(kline.Value);
+                previous = kline;
             }
         }
     }
