@@ -32,7 +32,14 @@ namespace Downloader.Core.Core
         public static string ToFileName(this DownloadTask downloadTask)
         {
             var fileName = $"{downloadTask.Exchange}_{downloadTask.Symbol}_{downloadTask.Start.ToShortDateString()}_{downloadTask.End.ToShortDateString()}.csv";
-            return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, ch) => current.Replace(ch.ToString(), string.Empty));
+            fileName = Path.GetInvalidFileNameChars().Aggregate(fileName, (current, ch) => current.Replace(ch.ToString(), string.Empty));
+
+            if (string.IsNullOrEmpty(downloadTask.Folder)) return fileName;
+
+            var directory = new DirectoryInfo(downloadTask.Folder);
+            if (!directory.Exists) directory.Create();
+            return Path.Combine(directory.FullName, fileName);
+
         }
     }
 }

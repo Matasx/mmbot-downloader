@@ -8,6 +8,7 @@ namespace Downloader.Core.Configuration
         public static DownloadTask ToDownloadTask(this ConfigurationEntry configuration)
         {
             return new DownloadTask(
+                "data",
                 configuration.Exchange,
                 configuration.TradingPair,
                 DateTime.Parse(configuration.StartDate, null, DateTimeStyles.AssumeUniversal).ToUniversalTime(),
