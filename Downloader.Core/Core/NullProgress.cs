@@ -2,9 +2,8 @@
 {
     public class NullProgress : IProgress
     {
-        public void Report(string name, int current, int total)
+        public void Report(string name, int current, int total, bool? error)
         {
-        
         }
     }
 }

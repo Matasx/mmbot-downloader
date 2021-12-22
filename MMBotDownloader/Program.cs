@@ -8,14 +8,20 @@ using Downloader.Core.Exchange.FTX;
 using Downloader.Core.Exchange.Kucoin;
 using Downloader.Core.Utils;
 using System.Linq;
+using log4net;
 
 namespace MMBotDownloader
 {
     internal class Program
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
+
         private static void Main()
         {
             ServicePointManager.DefaultConnectionLimit = 10;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            Log.Info("Starting");
 
             var ui = new UserInterface();
             var client = new HttpClient(new TransientErrorRetryHttpClientHandler());
@@ -31,6 +37,7 @@ namespace MMBotDownloader
             configuration.PrintTo(ui);
 
             ui.Prompt("Continue by pressing ENTER ...");
+            Log.Info("Downloading");
 
             foreach (var task in configuration.Pairs.Select(x => x.ToDownloadTask()))
             {
