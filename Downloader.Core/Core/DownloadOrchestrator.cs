@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Downloader.Core.Exchange;
 using Downloader.Core.Exchange.Common;
 using Downloader.Core.Utils;
 using log4net;
@@ -56,32 +57,14 @@ namespace Downloader.Core.Core
 
             var chunks = downloader.PrepareChunks(downloadTask).ToList();
             var results = new IList<Kline>[chunks.Count];
-            var currentChunk = 0;
             var tasks = chunks.Select<T, Action>((x, i) => () =>
             {
-                var error = false;
-                try
-                {
-                    var stopwatch = new Stopwatch();
-                    stopwatch.Restart();
-                    results[i] = downloader.DownloadLinesAsync(x).GetAwaiter().GetResult().ToList();
-                    stopwatch.Stop();
-                    Log.Debug($"Downloaded in {stopwatch.ElapsedMilliseconds} ms: {x}");
-                    _ui.WriteSelection($"Downloaded in {stopwatch.ElapsedMilliseconds} ms:", x.ToString());
-                }
-                catch
-                {
-                    error = true;
-                    throw;
-                }
-                finally
-                {
-                    lock (_lock)
-                    {
-                        currentChunk++;
-                        _progress.Report(name, currentChunk, chunks.Count, error);
-                    }
-                }
+                var stopwatch = new Stopwatch();
+                stopwatch.Restart();
+                results[i] = downloader.DownloadLinesAsync(x).GetAwaiter().GetResult().ToList();
+                stopwatch.Stop();
+                Log.Debug($"Downloaded in {stopwatch.ElapsedMilliseconds} ms: {x}");
+                _ui.WriteSelection($"Downloaded in {stopwatch.ElapsedMilliseconds} ms:", x.ToString());
             });
             var queue = new Queue<Action>(tasks);
             var awaits = new List<Task>();
@@ -89,12 +72,16 @@ namespace Downloader.Core.Core
 
             Log.Info($"Number of chunks to download: {queue.Count}");
             _ui.WriteSelection("Number of chunks to download:", queue.Count.ToString());
-            while (queue.Any())
+
+            var currentChunk = 0;
+            var stop = false;
+            while (!stop && queue.Any())
             {
                 semaphore.Wait();
                 var action = queue.Dequeue();
                 awaits.Add(Task.Run(() =>
                 {
+                    var error = true;
                     try
                     {
                         Exception lastException = null;
@@ -103,6 +90,14 @@ namespace Downloader.Core.Core
                             try
                             {
                                 action();
+                                error = false;
+                                return;
+                            }
+                            catch (PairNotAvailableException e)
+                            {
+                                stop = true;
+                                Log.Warn(e.Message, e);
+                                _ui.WriteLine(e.Message, ConsoleColor.Yellow);
                                 return;
                             }
                             catch (Exception e)
@@ -116,6 +111,11 @@ namespace Downloader.Core.Core
                     finally
                     {
                         semaphore.Release();
+                        lock (_lock)
+                        {
+                            currentChunk++;
+                            _progress.Report(name, currentChunk, chunks.Count, error);
+                        }
                     }
                 }));
             }

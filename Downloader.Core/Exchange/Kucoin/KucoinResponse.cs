@@ -7,6 +7,9 @@ namespace Downloader.Core.Exchange.Kucoin
         [JsonPropertyName("code")]
         public string Code { get; set; }
 
+        [JsonPropertyName("msg")]
+        public string Msg { get; set; }
+
         [JsonPropertyName("data")]
         public List<List<string>> Data { get; set; }
     }

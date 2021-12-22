@@ -26,6 +26,9 @@ namespace Downloader.Core.Exchange.Kucoin
             var url = $"https://api.kucoin.com/api/v1/market/candles?type=1min&symbol={chunk.Symbol}&startAt={chunk.StartTimeSec}&endAt={chunk.EndTimeSec}";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonConvert.DeserializeObject<KucoinResponse>(dataString);
+
+            if (data.Code == "400100") throw new PairNotAvailableException(data.Msg);
+
             return data.Data.Select(x => new Kline(UnixEpoch.GetDateTimeSec(long.Parse(x[0])), x[2].ToString()));
         }
 
