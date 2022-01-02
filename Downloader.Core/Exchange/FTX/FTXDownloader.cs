@@ -9,6 +9,8 @@ namespace Downloader.Core.Exchange.FTX
     {
         private readonly HttpClient _client;
 
+        private const string ApiBase = "https://ftx.com/api/";
+
         public string Name => "FTX";
         public string SymbolExample => "ADA-PERP";
 
@@ -23,7 +25,7 @@ namespace Downloader.Core.Exchange.FTX
 
         public async Task<IEnumerable<Kline>> DownloadLinesAsync(SecChunk chunk)
         {
-            var url = $"https://ftx.com/api/markets/{chunk.Symbol}/candles?resolution=60&start_time={chunk.StartTimeSec}&end_time={chunk.EndTimeSec}";
+            var url = $"{ApiBase}markets/{chunk.Symbol}/candles?resolution=60&start_time={chunk.StartTimeSec}&end_time={chunk.EndTimeSec}";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonConvert.DeserializeObject<FTXResponse>(dataString);
             return data.result.Select(x => new Kline(DateTime.Parse(x.startTime, null, DateTimeStyles.AssumeUniversal).ToUniversalTime(), x.close.ToString("G").Replace(',', '.')));
@@ -32,6 +34,14 @@ namespace Downloader.Core.Exchange.FTX
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
         {
             return orchestrator.Download(this, downloadTask);
+        }
+
+        public async Task<IEnumerable<SymbolInfo>> GetSymbolsAsync()
+        {
+            const string url = $"{ApiBase}markets";
+            var dataString = await _client.GetStringAsync(url);
+            var data = JsonConvert.DeserializeObject<FTXSymbolResponse>(dataString);
+            return data.Result.Select(x => new SymbolInfo(x.Name, x.BaseCurrency, x.QuoteCurrency));
         }
     }
 }

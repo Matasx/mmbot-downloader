@@ -9,6 +9,8 @@ namespace Downloader.Core.Exchange.Kucoin
     {
         private readonly HttpClient _client;
 
+        private const string ApiBase = "https://api.kucoin.com/api/v1/";
+
         public string Name => "KUCOIN";
         public string SymbolExample => "BTC-USDT";
 
@@ -23,9 +25,9 @@ namespace Downloader.Core.Exchange.Kucoin
 
         public async Task<IEnumerable<Kline>> DownloadLinesAsync(SecChunk chunk)
         {
-            var url = $"https://api.kucoin.com/api/v1/market/candles?type=1min&symbol={chunk.Symbol}&startAt={chunk.StartTimeSec}&endAt={chunk.EndTimeSec}";
+            var url = $"{ApiBase}market/candles?type=1min&symbol={chunk.Symbol}&startAt={chunk.StartTimeSec}&endAt={chunk.EndTimeSec}";
             var dataString = await _client.GetStringAsync(url);
-            var data = JsonConvert.DeserializeObject<KucoinResponse>(dataString);
+            var data = JsonConvert.DeserializeObject<KucoinResponse<List<string>>>(dataString);
 
             if (data.Code == "400100") throw new PairNotAvailableException(data.Msg);
 
@@ -35,6 +37,15 @@ namespace Downloader.Core.Exchange.Kucoin
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
         {
             return orchestrator.Download(this, downloadTask);
+        }
+
+        public async Task<IEnumerable<SymbolInfo>> GetSymbolsAsync()
+        {
+            const string url = $"{ApiBase}symbols";
+            var dataString = await _client.GetStringAsync(url);
+            var data = JsonConvert.DeserializeObject<KucoinResponse<KucoinSymbol>>(dataString);
+
+            return data.Data.Select(x => new SymbolInfo(x.Symbol, x.BaseCurrency, x.QuoteCurrency));
         }
     }
 }

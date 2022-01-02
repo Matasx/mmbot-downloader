@@ -32,12 +32,15 @@ namespace Downloader.Core.Core
             _ui.WriteLine();
         }
 
+        public IGenericDownloader GetDownloader(string exchange)
+        {
+            return _downloaders
+                .FirstOrDefault(x => string.Compare(x.Name, exchange, StringComparison.InvariantCultureIgnoreCase) == 0);
+        }
+
         public string Download(DownloadTask downloadTask)
         {
-            var downloader = _downloaders
-                .FirstOrDefault(x => string.Compare(x.Name, downloadTask.Exchange, StringComparison.InvariantCultureIgnoreCase) == 0);
-
-            return downloader?.DownloadWith(this, downloadTask);
+            return GetDownloader(downloadTask.Exchange)?.DownloadWith(this, downloadTask);
         }
 
         public string Download<T>(IDownloader<T> downloader, DownloadTask downloadTask) where T : struct

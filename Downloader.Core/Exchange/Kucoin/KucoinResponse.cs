@@ -2,7 +2,7 @@
 
 namespace Downloader.Core.Exchange.Kucoin
 {
-    public class KucoinResponse
+    public class KucoinResponse<T>
     {
         [JsonPropertyName("code")]
         public string Code { get; set; }
@@ -11,6 +11,6 @@ namespace Downloader.Core.Exchange.Kucoin
         public string Msg { get; set; }
 
         [JsonPropertyName("data")]
-        public List<List<string>> Data { get; set; }
+        public List<T> Data { get; set; }
     }
 }

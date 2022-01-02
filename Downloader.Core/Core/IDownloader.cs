@@ -1,5 +1,4 @@
-﻿using Downloader.Core.Exchange.Binance;
-using Downloader.Core.Exchange.Common;
+﻿using Downloader.Core.Exchange.Common;
 
 namespace Downloader.Core.Core
 {

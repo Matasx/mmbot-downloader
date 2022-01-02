@@ -5,7 +5,7 @@
         public DateTime Time { get; }
         public string Value { get; }
 
-        public Kline(DateTime time, string? value)
+        public Kline(DateTime time, string value)
         {
             Time = time;
             Value = value;

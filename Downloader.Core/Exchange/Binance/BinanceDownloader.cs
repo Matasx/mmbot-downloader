@@ -9,6 +9,8 @@ namespace Downloader.Core.Exchange.Binance
     {
         private readonly HttpClient _client;
 
+        private const string ApiBase = "https://api.binance.com/api/v3/";
+
         public string Name => "BINANCE";
         public string SymbolExample => "ADAUSDT";
 
@@ -23,7 +25,7 @@ namespace Downloader.Core.Exchange.Binance
 
         public async Task<IEnumerable<Kline>> DownloadLinesAsync(MsChunk chunk)
         {
-            var url = $"https://api.binance.com/api/v3/klines?symbol={chunk.Symbol}&interval=1m&startTime={chunk.StartTimeMs}&limit=1000";
+            var url = $"{ApiBase}klines?symbol={chunk.Symbol}&interval=1m&startTime={chunk.StartTimeMs}&limit=1000";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonConvert.DeserializeObject<IList<IList<object>>>(dataString);
             return data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[4].ToString()));
@@ -32,6 +34,14 @@ namespace Downloader.Core.Exchange.Binance
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
         {
             return orchestrator.Download(this, downloadTask);
+        }
+
+        public async Task<IEnumerable<SymbolInfo>> GetSymbolsAsync()
+        {
+            const string url = $"{ApiBase}exchangeInfo";
+            var dataString = await _client.GetStringAsync(url);
+            var data = JsonConvert.DeserializeObject<BinanceSymbolResponse>(dataString);
+            return data.Symbols.Select(x => new SymbolInfo(x.Symbol, x.BaseAsset, x.QuoteAsset));
         }
     }
 }

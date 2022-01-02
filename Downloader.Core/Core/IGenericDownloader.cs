@@ -6,5 +6,6 @@
         string SymbolExample { get; }
         int DegreeOfParallelism { get; }
         string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask);
+        Task<IEnumerable<SymbolInfo>> GetSymbolsAsync();
     }
 }
