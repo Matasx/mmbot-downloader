@@ -32,9 +32,9 @@ namespace Downloader.Core.Exchange.Kucoin
             return data.Data.Select(x => new Kline(UnixEpoch.GetDateTimeSec(long.Parse(x[0])), x[2].ToString()));
         }
 
-        public void DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
+        public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
         {
-            orchestrator.Download(this, downloadTask);
+            return orchestrator.Download(this, downloadTask);
         }
     }
 }

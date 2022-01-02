@@ -29,9 +29,9 @@ namespace Downloader.Core.Exchange.FTX
             return data.result.Select(x => new Kline(DateTime.Parse(x.startTime, null, DateTimeStyles.AssumeUniversal).ToUniversalTime(), x.close.ToString("G").Replace(',', '.')));
         }
 
-        public void DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
+        public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
         {
-            orchestrator.Download(this, downloadTask);
+            return orchestrator.Download(this, downloadTask);
         }
     }
 }

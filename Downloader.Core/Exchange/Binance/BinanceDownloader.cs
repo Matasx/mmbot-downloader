@@ -29,9 +29,9 @@ namespace Downloader.Core.Exchange.Binance
             return data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[4].ToString()));
         }
 
-        public void DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
+        public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
         {
-            orchestrator.Download(this, downloadTask);
+            return orchestrator.Download(this, downloadTask);
         }
     }
 }

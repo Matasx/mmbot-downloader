@@ -30,9 +30,9 @@ namespace Downloader.Core.Exchange.Bitfinex
             return data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[2].ToString().Replace(',', '.')));
         }
 
-        public void DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
+        public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
         {
-            orchestrator.Download(this, downloadTask);
+            return orchestrator.Download(this, downloadTask);
         }
     }
 }

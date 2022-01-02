@@ -32,15 +32,15 @@ namespace Downloader.Core.Core
             _ui.WriteLine();
         }
 
-        public void Download(DownloadTask downloadTask)
+        public string Download(DownloadTask downloadTask)
         {
-            foreach (var downloader in _downloaders.Where(x => string.Compare(x.Name, downloadTask.Exchange, StringComparison.InvariantCultureIgnoreCase) == 0))
-            {
-                downloader.DownloadWith(this, downloadTask);
-            }
+            var downloader = _downloaders
+                .FirstOrDefault(x => string.Compare(x.Name, downloadTask.Exchange, StringComparison.InvariantCultureIgnoreCase) == 0);
+
+            return downloader?.DownloadWith(this, downloadTask);
         }
 
-        public void Download<T>(IDownloader<T> downloader, DownloadTask downloadTask) where T : struct
+        public string Download<T>(IDownloader<T> downloader, DownloadTask downloadTask) where T : struct
         {
             var name = downloadTask.ToString();
             Log.Info($"Downloading: {name}");
@@ -51,7 +51,7 @@ namespace Downloader.Core.Core
             {
                 Log.Info($"{fileName} already exists, skipping.");
                 _ui.WriteLine($"{fileName} already exists, skipping.");
-                return;
+                return fileName;
             }
             _progress.Report(name, 0, 1, false);
 
@@ -143,6 +143,8 @@ namespace Downloader.Core.Core
                 writer.WriteLine(kline.Value);
                 previous = kline;
             }
+
+            return fileName;
         }
     }
 }

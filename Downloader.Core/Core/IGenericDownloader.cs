@@ -5,6 +5,6 @@
         string Name { get; }
         string SymbolExample { get; }
         int DegreeOfParallelism { get; }
-        void DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask);
+        string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask);
     }
 }
