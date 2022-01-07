@@ -14,7 +14,7 @@ namespace Downloader.Core.Exchange.Kucoin
         public string Name => "KUCOIN";
         public string SymbolExample => "BTC-USDT";
 
-        public int DegreeOfParallelism => 3;
+        public int DegreeOfParallelism => 5;
 
         public KucoinDownloader(HttpClient client)
         {
