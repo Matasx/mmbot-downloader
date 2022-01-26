@@ -62,8 +62,7 @@ namespace Downloader.Core.Core
             var results = new IList<Kline>[chunks.Count];
             var tasks = chunks.Select<T, Action>((x, i) => () =>
             {
-                var stopwatch = new Stopwatch();
-                stopwatch.Restart();
+                var stopwatch = Stopwatch.StartNew();
                 results[i] = downloader.DownloadLinesAsync(x).GetAwaiter().GetResult().ToList();
                 stopwatch.Stop();
                 Log.Debug($"Downloaded in {stopwatch.ElapsedMilliseconds} ms: {x}");

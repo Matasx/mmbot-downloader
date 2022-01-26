@@ -2,6 +2,7 @@
 using Downloader.Core.Exchange.Common;
 using Downloader.Core.Utils;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Downloader.Core.Exchange.Bitfinex
 {
@@ -16,6 +17,7 @@ namespace Downloader.Core.Exchange.Bitfinex
 
         // Bitfinex API is heavily speed-limited
         public int DegreeOfParallelism => 1;
+        private const int RequestAvgMs = 1000; // equals to 60 rpm
 
         public BitfinexDownloader(HttpClient client)
         {
@@ -26,10 +28,13 @@ namespace Downloader.Core.Exchange.Bitfinex
 
         public async Task<IEnumerable<Kline>> DownloadLinesAsync(MsChunk chunk)
         {
+            var watch = Stopwatch.StartNew();
             var url = $"{ApiBase}candles/trade:1m:{chunk.Symbol}/hist?limit=10000&start={chunk.StartTimeMs}&end={chunk.EndTimeMs}&sort=1";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonConvert.DeserializeObject<IList<IList<object>>>(dataString);
-            return data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[2].ToString().Replace(',', '.')));
+            var result = data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[2].ToString().Replace(',', '.')));
+            await Task.Delay(Math.Max(0, (int)(RequestAvgMs - watch.ElapsedMilliseconds)));
+            return result;
         }
 
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
