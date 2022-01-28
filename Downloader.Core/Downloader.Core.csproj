@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.13" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>

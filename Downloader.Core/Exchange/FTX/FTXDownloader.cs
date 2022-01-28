@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
+using System.Text.Json;
 using Downloader.Core.Core;
 using Downloader.Core.Exchange.Common;
-using Newtonsoft.Json;
 
 namespace Downloader.Core.Exchange.FTX
 {
@@ -27,7 +27,7 @@ namespace Downloader.Core.Exchange.FTX
         {
             var url = $"{ApiBase}markets/{chunk.Symbol}/candles?resolution=60&start_time={chunk.StartTimeSec}&end_time={chunk.EndTimeSec}";
             var dataString = await _client.GetStringAsync(url);
-            var data = JsonConvert.DeserializeObject<FTXResponse>(dataString);
+            var data = JsonSerializer.Deserialize<FTXResponse>(dataString);
             return data.result.Select(x => new Kline(DateTime.Parse(x.startTime, null, DateTimeStyles.AssumeUniversal).ToUniversalTime(), x.close.ToString("G").Replace(',', '.')));
         }
 
@@ -40,7 +40,7 @@ namespace Downloader.Core.Exchange.FTX
         {
             const string url = $"{ApiBase}markets";
             var dataString = await _client.GetStringAsync(url);
-            var data = JsonConvert.DeserializeObject<FTXSymbolResponse>(dataString);
+            var data = JsonSerializer.Deserialize<FTXSymbolResponse>(dataString);
             return data.Result.Select(x => new SymbolInfo(x.Name, x.BaseCurrency, x.QuoteCurrency));
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Downloader.Core.Core;
 using Downloader.Core.Exchange.Common;
 using Downloader.Core.Utils;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Downloader.Core.Exchange.Binance
 {
@@ -27,7 +27,7 @@ namespace Downloader.Core.Exchange.Binance
         {
             var url = $"{ApiBase}klines?symbol={chunk.Symbol}&interval=1m&startTime={chunk.StartTimeMs}&limit=1000";
             var dataString = await _client.GetStringAsync(url);
-            var data = JsonConvert.DeserializeObject<IList<IList<object>>>(dataString);
+            var data = JsonSerializer.Deserialize<IList<IList<object>>>(dataString);
             return data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[4].ToString()));
         }
 
@@ -40,7 +40,7 @@ namespace Downloader.Core.Exchange.Binance
         {
             const string url = $"{ApiBase}exchangeInfo";
             var dataString = await _client.GetStringAsync(url);
-            var data = JsonConvert.DeserializeObject<BinanceSymbolResponse>(dataString);
+            var data = JsonSerializer.Deserialize<BinanceSymbolResponse>(dataString);
             return data.Symbols.Select(x => new SymbolInfo(x.Symbol, x.BaseAsset, x.QuoteAsset));
         }
     }

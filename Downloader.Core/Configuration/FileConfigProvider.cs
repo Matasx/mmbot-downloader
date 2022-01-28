@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 namespace Downloader.Core.Configuration
 {
@@ -14,7 +14,7 @@ namespace Downloader.Core.Configuration
         public Configuration GetConfig()
         {
             var content = File.ReadAllText(_path);
-            return JsonConvert.DeserializeObject<Configuration>(content);
+            return JsonSerializer.Deserialize<Configuration>(content);
         }
     }
 }

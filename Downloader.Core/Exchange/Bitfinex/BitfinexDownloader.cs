@@ -1,8 +1,8 @@
 ﻿using Downloader.Core.Core;
 using Downloader.Core.Exchange.Common;
 using Downloader.Core.Utils;
-using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace Downloader.Core.Exchange.Bitfinex
 {
@@ -30,8 +30,8 @@ namespace Downloader.Core.Exchange.Bitfinex
         {
             var watch = Stopwatch.StartNew();
             var url = $"{ApiBase}candles/trade:1m:{chunk.Symbol}/hist?limit=10000&start={chunk.StartTimeMs}&end={chunk.EndTimeMs}&sort=1";
-            var dataString = await _client.GetStringAsync(url);
-            var data = JsonConvert.DeserializeObject<IList<IList<object>>>(dataString);
+            var dataString = await _client.GetStringAsync(url);            
+            var data = JsonSerializer.Deserialize<IList<IList<object>>>(dataString);
             var result = data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[2].ToString().Replace(',', '.')));
             await Task.Delay(Math.Max(0, (int)(RequestAvgMs - watch.ElapsedMilliseconds)));
             return result;
@@ -46,7 +46,7 @@ namespace Downloader.Core.Exchange.Bitfinex
         {
             const string url = $"{ApiBase}conf/pub:list:pair:exchange";
             var dataString = await _client.GetStringAsync(url);
-            var data = JsonConvert.DeserializeObject<IList<IList<string>>>(dataString);
+            var data = JsonSerializer.Deserialize<IList<IList<string>>>(dataString);
             return data.SelectMany(x => x.Select(GetSymbolInfo));
         }
 
