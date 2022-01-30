@@ -41,7 +41,15 @@ namespace Downloader.Core.Exchange.FTX
             const string url = $"{ApiBase}markets";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonSerializer.Deserialize<FTXSymbolResponse>(dataString);
-            return data.Result.Select(x => new SymbolInfo(x.Name, x.BaseCurrency, x.QuoteCurrency));
+            return data.Result.Select(x =>
+            {
+                if (x.Type == "future")
+                {
+                    x.BaseCurrency = x.Underlying;
+                    x.QuoteCurrency = x.Name.StartsWith(x.Underlying) ? x.Name.Substring(x.BaseCurrency.Length + 1) : "unknown";
+                }
+                return new SymbolInfo(x.Name, x.BaseCurrency, x.QuoteCurrency);
+            });
         }
     }
 }
