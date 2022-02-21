@@ -9,6 +9,7 @@ using Downloader.Core.Exchange.Kucoin;
 using Downloader.Core.Utils;
 using System.Linq;
 using log4net;
+using Downloader.Core.Exchange.Bybit;
 
 namespace MMBotDownloader
 {
@@ -29,7 +30,8 @@ namespace MMBotDownloader
                 new BinanceDownloader(client),
                 new BitfinexDownloader(client),
                 new FTXDownloader(client),
-                new KucoinDownloader(client)
+                new KucoinDownloader(client),
+                new BybitDownloader(client)
             });
             orchestrator.PrintExchanges();
 
