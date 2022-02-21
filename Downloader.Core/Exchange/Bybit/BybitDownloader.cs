@@ -5,18 +5,18 @@ using System.Text.Json;
 
 namespace Downloader.Core.Exchange.Bybit
 {
-    public class BybitDownloader : IDownloader<SecChunk>
+    public class BybitUsdtPerpDownloader : IDownloader<SecChunk>
     {
         private readonly HttpClient _client;
 
-        private const string ApiBase = "https://api.bybit.com/v2/public/";
+        private const string ApiBase = "https://api.bybit.com/";
 
-        public string Name => "BYBIT";
-        public string SymbolExample => "BTCUSD";
+        public string Name => "BYBIT-USDT-PERP";
+        public string SymbolExample => "BTCUSDT";
 
         public int DegreeOfParallelism => 5;
 
-        public BybitDownloader(HttpClient client)
+        public BybitUsdtPerpDownloader(HttpClient client)
         {
             _client = client;
         }
@@ -25,11 +25,11 @@ namespace Downloader.Core.Exchange.Bybit
 
         public async Task<IEnumerable<Kline>> DownloadLinesAsync(SecChunk chunk)
         {
-            var url = $"{ApiBase}kline/list?interval=1&symbol={chunk.Symbol}&from={chunk.StartTimeSec}&limit=200";
+            var url = $"{ApiBase}public/linear/kline?interval=1&symbol={chunk.Symbol}&from={chunk.StartTimeSec}&limit=200";
             var dataString = await _client.GetStringAsync(url);
-            var data = JsonSerializer.Deserialize<BybitResponse<BybitKline>>(dataString);
+            var data = JsonSerializer.Deserialize<BybitResponse<BybitUsdtPerpKline>>(dataString);
 
-            return data.Result.Select(x => new Kline(UnixEpoch.GetDateTimeSec(x.OpenTime), x.Close));
+            return data.Result.Select(x => new Kline(UnixEpoch.GetDateTimeSec(x.OpenTime), x.Close.ToString().Replace(',', '.')));
         }
 
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
@@ -39,7 +39,7 @@ namespace Downloader.Core.Exchange.Bybit
 
         public async Task<IEnumerable<SymbolInfo>> GetSymbolsAsync()
         {
-            const string url = $"{ApiBase}symbols";
+            const string url = $"{ApiBase}v2/public/symbols";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonSerializer.Deserialize<BybitResponse<BybitSymbol>>(dataString);
 

@@ -31,7 +31,7 @@ namespace MMBotDownloader
                 new BitfinexDownloader(client),
                 new FTXDownloader(client),
                 new KucoinDownloader(client),
-                new BybitDownloader(client)
+                new BybitUsdtPerpDownloader(client)
             });
             orchestrator.PrintExchanges();
 

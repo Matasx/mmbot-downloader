@@ -2,12 +2,12 @@
 
 namespace Downloader.Core.Exchange.Bybit
 {
-    public class BybitKline
+    public class BybitUsdtPerpKline
     {
         [JsonPropertyName("open_time")]
         public long OpenTime { get; set; }
 
         [JsonPropertyName("close")]
-        public string Close { get; set; }
+        public double Close { get; set; }
     }
 }
