@@ -29,7 +29,7 @@ namespace Downloader.Core.Exchange.Bybit
             var dataString = await _client.GetStringAsync(url);
             var data = JsonSerializer.Deserialize<BybitResponse<BybitUsdtPerpKline>>(dataString);
 
-            return data.Result.Select(x => new Kline(UnixEpoch.GetDateTimeSec(x.OpenTime), x.Close.ToString().Replace(',', '.')));
+            return data.Result.Select(x => new Kline(UnixEpoch.GetDateTimeSec(x.OpenTime), x.Close.ToString().Replace(',', '.'), "0")); //TODO: volume
         }
 
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)

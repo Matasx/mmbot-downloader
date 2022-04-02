@@ -28,7 +28,7 @@ namespace Downloader.Core.Exchange.Binance
             var url = $"{ApiBase}klines?symbol={chunk.Symbol}&interval=1m&startTime={chunk.StartTimeMs}&limit=1000";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonSerializer.Deserialize<IList<IList<JsonElement>>>(dataString);
-            return data.Select(x => new Kline(UnixEpoch.GetDateTimeMs(x[0].GetInt64()), x[4].GetString()));
+            return data.Select(x => new Kline(UnixEpoch.GetDateTimeMs(x[0].GetInt64()), x[4].GetString(), "0")); //TODO: volume
         }
 
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)

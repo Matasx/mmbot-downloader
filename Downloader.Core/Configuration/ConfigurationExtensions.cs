@@ -8,6 +8,7 @@ namespace Downloader.Core.Configuration
         {
             ui.WriteLine();
             ui.WriteLine("Selected options:");
+            ui.WriteSelection("Download volume:", configuration.DownloadVolume ? "yes" : "no");
             foreach (var option in configuration.Pairs)
             {
                 ui.WriteSelection("Exchange:", option.Exchange);

@@ -32,7 +32,7 @@ namespace Downloader.Core.Exchange.Bitfinex
             var url = $"{ApiBase}candles/trade:1m:{chunk.Symbol}/hist?limit=10000&start={chunk.StartTimeMs}&end={chunk.EndTimeMs}&sort=1";
             var dataString = await _client.GetStringAsync(url);            
             var data = JsonSerializer.Deserialize<IList<IList<object>>>(dataString);
-            var result = data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[2].ToString().Replace(',', '.')));
+            var result = data.Select(x => new Kline(UnixEpoch.GetDateTimeMs((long)x[0]), x[2].ToString().Replace(',', '.'), "0")); //TODO: volume
             await Task.Delay(Math.Max(0, (int)(RequestAvgMs - watch.ElapsedMilliseconds)));
             return result;
         }

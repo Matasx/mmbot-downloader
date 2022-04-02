@@ -41,7 +41,7 @@ namespace MMBotDownloader
             ui.Prompt("Continue by pressing ENTER ...");
             Log.Info("Downloading");
 
-            foreach (var task in configuration.Pairs.Select(x => x.ToDownloadTask()))
+            foreach (var task in configuration.Pairs.Select(x => x.ToDownloadTask(configuration.DownloadVolume)))
             {
                 orchestrator.Download(task);
             }

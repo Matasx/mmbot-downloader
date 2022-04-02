@@ -137,12 +137,13 @@ namespace Downloader.Core.Core
                 if (previous != null)
                 {
                     var gap = (int)(kline.Time - previous.Time).TotalMinutes - 1;
+                    previous = new Kline(previous.Time, previous.Value, "0");
                     for (var i = 0; i < gap; i++)
                     {
-                        writer.WriteLine(previous.Value);
+                        writer.WriteLine(previous.ToCsvLine(downloadTask.DownloadVolume));
                     }
                 }
-                writer.WriteLine(kline.Value);
+                writer.WriteLine(kline.ToCsvLine(downloadTask.DownloadVolume));
                 previous = kline;
             }
 

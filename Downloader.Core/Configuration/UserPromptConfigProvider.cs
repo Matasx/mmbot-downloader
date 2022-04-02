@@ -15,6 +15,7 @@ namespace Downloader.Core.Configuration
         {
             return new Configuration
             {
+                DownloadVolume = _ui.Prompt("Download volume? (y/N): ").Trim().ToLower() == "y",
                 Pairs = new List<ConfigurationEntry>
                 {
                     new ConfigurationEntry

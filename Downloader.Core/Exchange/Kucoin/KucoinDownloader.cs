@@ -31,7 +31,7 @@ namespace Downloader.Core.Exchange.Kucoin
 
             if (data.Code == "400100") throw new PairNotAvailableException(data.Msg);
 
-            return data.Data.Select(x => new Kline(UnixEpoch.GetDateTimeSec(long.Parse(x[0])), x[2].ToString()));
+            return data.Data.Select(x => new Kline(UnixEpoch.GetDateTimeSec(long.Parse(x[0])), x[2].ToString(), x[5].ToString()));
         }
 
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)

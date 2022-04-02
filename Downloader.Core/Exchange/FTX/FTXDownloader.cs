@@ -28,7 +28,7 @@ namespace Downloader.Core.Exchange.FTX
             var url = $"{ApiBase}markets/{chunk.Symbol}/candles?resolution=60&start_time={chunk.StartTimeSec}&end_time={chunk.EndTimeSec}";
             var dataString = await _client.GetStringAsync(url);
             var data = JsonSerializer.Deserialize<FTXResponse>(dataString);
-            return data.result.Select(x => new Kline(DateTime.Parse(x.startTime, null, DateTimeStyles.AssumeUniversal).ToUniversalTime(), x.close.ToString("G").Replace(',', '.')));
+            return data.result.Select(x => new Kline(DateTime.Parse(x.startTime, null, DateTimeStyles.AssumeUniversal).ToUniversalTime(), x.close.ToString("G").Replace(',', '.'), "0")); //TODO: volume
         }
 
         public string DownloadWith(DownloadOrchestrator orchestrator, DownloadTask downloadTask)
